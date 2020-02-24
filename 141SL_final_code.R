@@ -3,7 +3,10 @@ library(dplyr)
 setwd("~/Desktop/CampusClimateProject")
 climate = read.csv("campusclimate.csv")
 
-climate_clean = na.omit(climate)
+# NA count over 50% NA's
+vars_drop = names(which(colMeans(is.na(climate)) > 0.5))
+
+climate_clean = na.omit(climate[,-which(names(climate) %in% vars_drop)])
 climate_numeric = climate_clean[, Filter(is.numeric)]
 
 correlation = climate_clean %>% 
@@ -12,11 +15,13 @@ correlation = climate_clean %>%
 		round(digits=2) %>% 
 		as.data.frame()
 		
-#Threshold correlation change so we can decide desired threshold
+# Threshold correlation change so we can decide desired threshold
 THRESHOLD_COR = 0.55
 		
 correlation[abs(correlation) < THRESHOLD_COR] <- NA
-correlation %>% filter_all(any_vars(!is.na(.)))
+head(correlation)
+academics correlation %>% filter_all(any_vars(!is.na(.))) %>% select("academicsp")
+
 
 
 
